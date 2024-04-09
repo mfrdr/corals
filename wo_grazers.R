@@ -19,16 +19,18 @@ e <- 0.2       # ranges between 0 and 1
 
 
 # Initial conditions
-C <- 0.2
-R <- 0.2
+R <- 0
+C <- 0
 M <- 0.1
 
-init <- c(C,R,M)
+init <- c(R,C,M)
 times <- seq(0,1000,1)
 
 
-derivative = function(t,init,params){
-  
+derivative = function(t,y,param){
+  R = y[1]
+  C = y[2]
+  M = y[3]
   
   dR = k*(w*C + e)*(1 - R - C - M) - a*R - s*R*M - n*R
   dC = a*R + g*C*(1 - R - C - M) - b*C*M - m*C
@@ -39,7 +41,7 @@ derivative = function(t,init,params){
 
 
 algae.out <- ode(init, times, derivative, parms=NULL)
-tail(algae.out)
+algae.out
 
 
 
