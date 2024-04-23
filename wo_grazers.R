@@ -1,6 +1,7 @@
 library(deSolve)
 library(fields)
 library(colorspace)
+library(phaseR)
 
 
   
@@ -61,18 +62,20 @@ legend(x = "topright",
 
 
 ##################################################################################################################################
+# CORAL COVERAGE EQUILIBRIUM AND INSTABILITY ANALYSIS
+  
 times <- seq(0,50,0.1)
-
-
+e <- 0
+num_scenarios <- 1000
+c_values <- c(0.10, 0.15, 0.166, 0.20, 0.25)
 
 R <- 0.1
 M <- 0.5
 init_values <- list(c(R, 0.10, M ), 
                     c(R, 0.15, M ), 
-                    c(R, 0.165,M ), 
+                    c(R, 0.1777,M ), 
                     c(R, 0.20, M ), 
                     c(R, 0.25, M ))
-
 
 corals.out <- list()
 for (i in 1:length(init_values)) {
@@ -103,12 +106,27 @@ box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
 axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
-##################################################################################################################################
 
-num_scenarios <- 1000
+# e     init
+# 0     0.179
+# 0.1   
+# 0.2   0.1565
+# 0.3
+# 0.4
+# 0.5
+# 0.6
+# 0.7
+# 0.8
+# 0.9
+
+
+##################################################################################################################################
+# PHASE PLOT (CORAL vs MACROALGAE) e=0
+e <-0
+num_scenarios <- 500
 init_values <- list()
 
-# Random scenario
+# Random scenarios
 for (i in 1:num_scenarios) {
   init <- runif(4)
   init <- init / sum(init)
@@ -175,18 +193,27 @@ for (i in 1:length(init_values)) {
 }
 
 
+# ISOCLINE ZERO NET GROWTH M
+c_values <- seq(0,0.9,0.01)
+m_zg <- numeric(length(c_values))
+for (i in seq_along(c_values)){
+  c <- c_values[i]
+  m_zg[i] = 1 - c + b*c/s - (z/s)*((o*c)/(1+o*C)) - h/s
+  print(m_zg[i])
+}
 
-
-# Plot phase plane: Corals vs. Macroalgae [one matrix]
-# plot(initcond.out[[1]][,4], initcond.out[[1]][,3], type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae", 
-#      ylim=c(0,0.9), xlim=c(0,0.9), pch = 3, lwd = 1, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="#39656E")
-# for (i in 2:num_scenarios) {
-#   lines(initcond.out[[i]][,4], initcond.out[[i]][,3], type="l", pch = 3, lwd = 1, col="#39656E")
+# ISOCLINE ZERO NET GROWTH C
+# m_values <- seq(0,0.9,0.01)
+# c_zg <- numeric(length(c_values))
+# for (i in seq_along(c_values)){
+#   m <- m_values[i]
+#   m_zg[i] = 
 # }
 
 
+
 # Plot phase plane: Corals vs. Macroalgae [color coded]
-plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae", 
+plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (e=0)", 
      ylim=c(0,90), xlim=c(0,90), pch = 3, lwd = 1, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="#E95951", axes=0)
 lines(algae.out[[1]][,4]*100, algae.out[[1]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
 
@@ -199,11 +226,120 @@ for (i in 2:len) {
     lines(algae.out[[i]][,4]*100, algae.out[[i]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
   }
 }
+lines(y=c_values*100, x=m_zg*100, type="l", pch = 3, lwd = 3, col="black")
+# lines(y=c_zg*100, x=m_values*100, type="l", pch = 3, lwd = 3, col="grey")
+
+box(lwd=3)
+axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
+axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
+
+
+plot(y=c_values*100, x=m_zg*100, type="l", pch = 3, lwd = 3, col="black")
+
+# PHASE PLOT (CORAL vs MACROALGAE) e=0.8
+e <-0.8
+num_scenarios <- 500
+init_values <- list()
+
+# Random scenarios
+for (i in 1:num_scenarios) {
+  init <- runif(4)
+  init <- init / sum(init)
+  init <- init[1:3]
+  init_values <- append(init_values, list(init))
+}
+
+# #Not so random scenario
+# values <- seq(0,1,0.1)
+# init_values <- list()
+# for (c in 1:10){
+#   C <- values[c]
+#   
+#   for (m in 1:(10*(1-C))) {
+#     M <- values[m] 
+#     R <- runif(1, 0, 1-C-M)
+#     
+#     init <- c(R,C,M)
+#     
+#     init_values <- append(init_values, list(init))
+#   }
+# }
+# 
+# num_scenarios_per_value <- 20  # Number of scenarios per value of C or M
+# C_values <- seq(0.1, 0.9, 0.1)  # Values of C from 0.1 to 0.9 with spacing 0.1
+# M_values <- seq(0.1, 0.9, 0.1)  # Values of M from 0.1 to 0.9 with spacing 0.1
+# 
+# init_values <- list()
+# 
+# for (C in C_values) {
+#   for (M in M_values) {
+#     if (C+M >= 1){
+#       break
+#     }
+#     for (i in 1:num_scenarios_per_value) {
+#       # Calculate the remaining free space
+#       R_free_space <- 1 - C - M
+# 
+#       # Randomly assign the remaining free space to R
+#       R <- runif(1, 0, R_free_space)
+# 
+#       # Store the initial conditions
+#       init_values <- append(init_values, list(c(R, C, M)))
+#     }
+#   }
+# }
+# 
+
+
+corals.out <- list()
+algae.out <- list()
+initcond.out <- list()
+
+for (i in 1:length(init_values)) {
+  
+  temp.out <- ode(init_values[[i]], times, derivative, parms=NULL)
+  initcond.out <- append(initcond.out, temp.out)
+  
+  if (tail(temp.out[,3], 1) >= 0.8) {
+    corals.out <- append(corals.out, list(temp.out))
+  } else {
+    algae.out <- append(algae.out, list(temp.out))
+  }
+}
+
+
+# ISOCLINE ZERO NET GROWTH M
+c_values <- seq(0,0.9,0.01)
+m_zg <- numeric(length(c_values))
+for (i in seq_along(c_values)){
+  c <- c_values[i]
+  m_zg[i] = - ( h/s + (z/s)*((o*c)/(1+o*C)) - b*c/s - 1 + c )
+}
+
+
+# Plot phase plane: Corals vs. Macroalgae [color coded]
+plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (e=0.8)", 
+     ylim=c(0,90), xlim=c(0,90), pch = 3, lwd = 1, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="#E95951", axes=0)
+lines(algae.out[[1]][,4]*100, algae.out[[1]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
+
+len <- max(length(corals.out),length(algae.out))
+for (i in 2:len) {
+  if (i < length(corals.out)){
+    lines(corals.out[[i]][,4]*100, corals.out[[i]][,3]*100, type="l", pch = 3, lwd = 1, col="#E95951")
+  }
+  if (i < length(algae.out)) {
+    lines(algae.out[[i]][,4]*100, algae.out[[i]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
+  }
+}
+lines(y=c_values*100, x=m_zg*100, type="l", pch = 3, lwd = 3, col="black")
+
 box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
 axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
 ##################################################################################################################################
+# EFFECT OF EXTERNAL SUPPLY OF CORAL LARVAE
+init <- c(0.2, 0.3, 0.3)
 times <- seq(0, 200, 1)
 e_values <- seq(0, 1, 0.05)
 num_scenarios <- 1000
@@ -237,28 +373,3 @@ e_all
 plot(e_values, e_all, type="p", xlab="External larval supply", ylab="Coral cover", main="Effect of external larval supply", 
      ylim=c(0,1), xlim=c(0,1), pch = 16, lwd = 5, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="black", cex=2, panel.first = grid())
 
-
-
-# # Initialize results vector
-# e_values <- seq(0, 1, 0.1)
-# init_values <- expand.grid(C = e_values, M = e_values)
-# init_values <- init_values[init_values$C + init_values$M <= 1, ]
-# 
-# init_values
-# e_all <- numeric(nrow(init_values))
-# 
-# # Solve for different initial conditions
-# for (i in seq_len(nrow(init_values))) {
-#   C <- init_values[i, "C"]
-#   M <- init_values[i, "M"]
-#   R <- runif(1, 0, 1 - C - M)  
-#   init <- c(R, C, M)
-#   result.out <- ode(init, times, derivative, parms = NULL)
-#   e_all[i] <- result.out[length(times), 3]
-# }
-# 
-# # Coral cover and external supply
-# plot(e_values, e_all, type = "p", xlab = "External larval supply", ylab = "Coral cover", 
-#      main = "Effect of external larval supply", ylim = c(0, 1), xlim = c(0, 1), 
-#      pch = 16, lwd = 5, cex.main = 1.5, cex.axis = 1.3, cex.lab = 1.3, col = "black", cex = 2, panel.first = grid())
-# 
