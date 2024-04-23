@@ -24,7 +24,7 @@ R <- 0.2
 C <- 0.3
 M <- 0.3
 
-times <- seq(0,1000,1)
+times <- seq(0,200,1)
 
 derivative = function(t,y,param){
   R = y[1]
@@ -62,6 +62,9 @@ legend(x = "topright",
 
 ##################################################################################################################################
 times <- seq(0,50,0.1)
+
+
+
 R <- 0.1
 M <- 0.5
 init_values <- list(c(R, 0.10, M ), 
@@ -203,7 +206,7 @@ axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 ##################################################################################################################################
 times <- seq(0, 200, 1)
 e_values <- seq(0, 1, 0.05)
-num_scenarios <- 10000
+num_scenarios <- 1000
 e_all <- numeric(length(e_values))
 
 # Random scenario
@@ -219,6 +222,7 @@ for (i in 1:num_scenarios) {
 for (i in seq_along(e_values)) {
   tail_temp <- 0
   e <- e_values[i]
+  print(e)
   for (j in 1:num_scenarios) {
     init <- init_values[[j]]
     temp.out <- ode(init, times, derivative, parms = NULL)
