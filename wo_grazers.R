@@ -121,8 +121,8 @@ axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
 
 ##################################################################################################################################
-# PHASE PLOT (CORAL vs MACROALGAE) e=0
-e <-0
+# PHASE PLOT (CORAL vs MACROALGAE) z=0
+z <-0.3
 num_scenarios <- 500
 init_values <- list()
 
@@ -173,7 +173,7 @@ for (i in 1:num_scenarios) {
 #     }
 #   }
 # }
-# 
+
 
 
 corals.out <- list()
@@ -213,7 +213,7 @@ for (i in seq_along(c_values)){
 
 
 # Plot phase plane: Corals vs. Macroalgae [color coded]
-plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (e=0)", 
+plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (z=0.3)", 
      ylim=c(0,90), xlim=c(0,90), pch = 3, lwd = 1, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="#E95951", axes=0)
 lines(algae.out[[1]][,4]*100, algae.out[[1]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
 
@@ -234,10 +234,8 @@ axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.
 axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
 
-plot(y=c_values*100, x=m_zg*100, type="l", pch = 3, lwd = 3, col="black")
-
-# PHASE PLOT (CORAL vs MACROALGAE) e=0.8
-e <-0.8
+# PHASE PLOT (CORAL vs MACROALGAE) z=0.8
+z <-0.8
 num_scenarios <- 500
 init_values <- list()
 
@@ -318,7 +316,7 @@ for (i in seq_along(c_values)){
 
 
 # Plot phase plane: Corals vs. Macroalgae [color coded]
-plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (e=0.8)", 
+plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (z=0.8)", 
      ylim=c(0,90), xlim=c(0,90), pch = 3, lwd = 1, cex.main = 1.5, cex.axis=1.3, cex.lab=1.3, col="#E95951", axes=0)
 lines(algae.out[[1]][,4]*100, algae.out[[1]][,3]*100, type="l", pch = 3, lwd = 1, col="#39656E")
 
@@ -337,7 +335,10 @@ box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
 axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
+
 ##################################################################################################################################
+
+
 # EFFECT OF EXTERNAL SUPPLY OF CORAL LARVAE
 init <- c(0.2, 0.3, 0.3)
 times <- seq(0, 200, 1)
