@@ -178,18 +178,6 @@ box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
 axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
-# e     init
-# 0     0.179
-# 0.1   
-# 0.2   0.1565
-# 0.3
-# 0.4
-# 0.5
-# 0.6
-# 0.7
-# 0.8
-# 0.9
-
 
 ##################################################################################################################################
 # PHASE PLOT (CORAL vs MACROALGAE) z=0
@@ -204,47 +192,6 @@ for (i in 1:num_scenarios) {
   init <- init[1:3]
   init_values <- append(init_values, list(init))
 }
-
-# #Not so random scenario
-# values <- seq(0,1,0.1)
-# init_values <- list()
-# for (c in 1:10){
-#   C <- values[c]
-#   
-#   for (m in 1:(10*(1-C))) {
-#     M <- values[m] 
-#     R <- runif(1, 0, 1-C-M)
-#     
-#     init <- c(R,C,M)
-#     
-#     init_values <- append(init_values, list(init))
-#   }
-# }
-# 
-# num_scenarios_per_value <- 20  # Number of scenarios per value of C or M
-# C_values <- seq(0.1, 0.9, 0.1)  # Values of C from 0.1 to 0.9 with spacing 0.1
-# M_values <- seq(0.1, 0.9, 0.1)  # Values of M from 0.1 to 0.9 with spacing 0.1
-# 
-# init_values <- list()
-# 
-# for (C in C_values) {
-#   for (M in M_values) {
-#     if (C+M >= 1){
-#       break
-#     }
-#     for (i in 1:num_scenarios_per_value) {
-#       # Calculate the remaining free space
-#       R_free_space <- 1 - C - M
-# 
-#       # Randomly assign the remaining free space to R
-#       R <- runif(1, 0, R_free_space)
-# 
-#       # Store the initial conditions
-#       init_values <- append(init_values, list(c(R, C, M)))
-#     }
-#   }
-# }
-
 
 
 corals.out <- list()
@@ -318,46 +265,6 @@ for (i in 1:num_scenarios) {
   init_values <- append(init_values, list(init))
 }
 
-# #Not so random scenario
-# values <- seq(0,1,0.1)
-# init_values <- list()
-# for (c in 1:10){
-#   C <- values[c]
-#   
-#   for (m in 1:(10*(1-C))) {
-#     M <- values[m] 
-#     R <- runif(1, 0, 1-C-M)
-#     
-#     init <- c(R,C,M)
-#     
-#     init_values <- append(init_values, list(init))
-#   }
-# }
-# 
-# num_scenarios_per_value <- 20  # Number of scenarios per value of C or M
-# C_values <- seq(0.1, 0.9, 0.1)  # Values of C from 0.1 to 0.9 with spacing 0.1
-# M_values <- seq(0.1, 0.9, 0.1)  # Values of M from 0.1 to 0.9 with spacing 0.1
-# 
-# init_values <- list()
-# 
-# for (C in C_values) {
-#   for (M in M_values) {
-#     if (C+M >= 1){
-#       break
-#     }
-#     for (i in 1:num_scenarios_per_value) {
-#       # Calculate the remaining free space
-#       R_free_space <- 1 - C - M
-# 
-#       # Randomly assign the remaining free space to R
-#       R <- runif(1, 0, R_free_space)
-# 
-#       # Store the initial conditions
-#       init_values <- append(init_values, list(c(R, C, M)))
-#     }
-#   }
-# }
-# 
 
 
 corals.out <- list()
@@ -420,9 +327,9 @@ axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
 lines(nullcline_C_values*100, lwd = 2, col = "red")
 
+
+
 ##################################################################################################################################
-
-
 # EFFECT OF EXTERNAL SUPPLY OF CORAL LARVAE
 init <- c(0.2, 0.3, 0.3)
 times <- seq(0, 200, 1)
