@@ -107,6 +107,77 @@ axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.
 axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
 
+# CORAL COVERAGE EQUILIBRIUM AND INSTABILITY ANALYSIS WITH DISTURBANCE AT T=10
+
+times <- seq(0,50,0.1)
+e <- 0
+num_scenarios <- 1000
+c_values <- c(0.10, 0.15, 0.166, 0.20, 0.25)
+
+R <- 0.1
+M <- 0.5
+init_values <- list(c(R, 0.10, M ), 
+                    c(R, 0.15, M ), 
+                    c(R, 0.1777,M ), 
+                    c(R, 0.20, M ), 
+                    c(R, 0.25, M ))
+
+
+derivative.dist = function(t,y,param){
+  R = y[1]
+  C = y[2]
+  M = y[3]
+  
+  m.dist = 0.8
+  
+  if (t > 10 && t < 11){
+    m.dist = 0.15
+  } else {
+    m.dist = 0.05
+  }
+  
+  dR = k*(w*C + e)*(1 - R - C - M) - a*R - s*R*M - n*R
+  dC = a*R + g*C*(1 - R - C - M) - b*C*M - m.dist*C
+  dM = s*M*(1 - C - M) + b*C*M - z*M*((o*C)/(1+o*C)) - h*M
+  print(m.dist)
+  print(t)
+  list(c(dR,dC,dM))
+}
+
+corals.out <- list()
+for (i in 1:length(init_values)) {
+  temp.out <- ode(init_values[[i]], times, derivative.dist, parms=NULL)
+  corals.out <- append(corals.out, list(temp.out))
+  print(tail(temp.out))
+}
+
+
+
+#RESULTS
+coral_palette <- colorRampPalette(c("#FFD1DC", "#FFB6C1", "#FF98A8", "#FF7A8F", "#FF5C75", "#FF3E5C", "#FF2042", "#FF001E"))
+plot(x=times, y=corals.out[[1]][,3]*100, type="l", main="Coral coverage",
+     ylab="Coral coverage (%)", xlab="Time (yrs)", ylim=c(0, 100),
+     pch=1, lwd=5, col=coral_palette(length(init_values)), cex.main=1.5, cex.axis=1.3, cex.lab=1.3,
+     panel.first=grid(lty=1, col='lightgrey'), axes=0)
+
+for (i in 2:length(init_values)) {
+  lines(x = times, y = corals.out[[i]][,3]*100, type = "l",
+        pch = 1, lwd = 5, col = coral_palette(length(init_values))[i])
+}
+
+
+for (x in c(seq(0, 9, 1),seq(11,50,1))) {symbols(x, 15.65, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", lty = NULL, lwd = 1)}
+for (x in seq(10, 10, 1)) {symbols(x, 40, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", lty = NULL, lwd = 1)}
+
+for (x in c(seq(0, 9, 1),seq(11,50,1))) {symbols(x, 86.57404, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
+for (x in seq(10, 10, 1)) {symbols(x, 61, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
+
+
+for (x in seq(0, 50, 1)) {symbols(x, 0, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
+box(lwd=3)
+axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
+axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
+
 # e     init
 # 0     0.179
 # 0.1   
@@ -311,9 +382,21 @@ c_values <- seq(0,0.9,0.01)
 m_zg <- numeric(length(c_values))
 for (i in seq_along(c_values)){
   c <- c_values[i]
-  m_zg[i] = - ( h/s + (z/s)*((o*c)/(1+o*C)) - b*c/s - 1 + c )
+  m_zg[i] = - ( h/s + (z/s)*((o*c)/(1+o*c)) - b*c/s - 1 + c )
 }
 
+# Define nullcline equations
+nullcline_C <- function(M, C) {
+  -a*R / (g(1 - R - C - M) - b * M - m)
+}
+
+# Generate grid of M and C values
+M_vals <- seq(0, 1, by = 0.01)
+C_vals <- seq(0, 1, by = 0.01)
+grid <- expand.grid(M = M_vals, C = C_vals)
+
+# Calculate nullcline values
+nullcline_C_values <- nullcline_C(grid$M, grid$C)
 
 # Plot phase plane: Corals vs. Macroalgae [color coded]
 plot(corals.out[[1]][,4]*100, corals.out[[1]][,3]*100, type="l", xlab="Macroalgae", ylab="Corals", main="Phase plane: Corals vs. Macroalgae (z=0.8)", 
@@ -335,6 +418,7 @@ box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
 axis(side = 1, at = seq(0, 100, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
 
+lines(nullcline_C_values*100, lwd = 2, col = "red")
 
 ##################################################################################################################################
 
