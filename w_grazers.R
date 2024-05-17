@@ -17,17 +17,17 @@ o <- 4
 h <- 0.1
 e <- 0.2     # ranges between 0 and 1
 beta <- 10
-f <- 0.2 # from Blackwood et al 2010
+f <- 0.25 # from Blackwood et al 2010
 
 
 # Initial conditions
 R <- 0.2
-C <- 0.4
+C <- 0.3
 M <- 0.3
 G <- 1
 B <- 1 - R - C - M
 
-times <- seq(0,1000,1)
+times <- seq(0,250,1)
 
 derivative = function(t,y,param){
   R = y[1]
@@ -49,85 +49,77 @@ all.out <- ode(init, times, derivative, parms=NULL, method = vode )
 # blank space
 B <- 1 - all.out[,2] - all.out[,3] - all.out[,4]
 
+
+
+
 #RESULTS upto the timestep at which the integration failed
 maxtime <- times[1:length(all.out[,1])]
 
-plot(x = maxtime, y = all.out[,2], type = "l", main = "Seabed coverage",
-     ylab = "Proportion of occupied seabed", xlab = "Time (years)", ylim=c(0,1),
-     pch = 3, lwd = 4, col = '#F6C64A', cex.main = 1.5, cex.axis=1.3, cex.lab=1.3,
-     panel.first = grid())
 
-lines(x = maxtime, y = all.out[,3], type = "l",
+
+plot(x = maxtime, y = all.out[,2]*100, type = "l", main = "Seabed coverage",
+     ylab = "Covered seabed (%)", xlab = "Time (yrs)", ylim=c(0,90),
+     pch = 3, lwd = 4, col = '#F6C64A', cex.main = 1.5, cex.axis=1.5, cex.lab=1.5,
+     panel.first = grid(), axes=0)
+
+lines(x = maxtime, y = all.out[,3]*100, type = "l",
       pch = 3, lwd = 4, col = '#E95951')
-lines(x = maxtime, y = all.out[,4], type = "l",
+lines(x = maxtime, y = all.out[,4]*100, type = "l",
       pch = 3, lwd = 4, col = '#39656E')
-lines(x = maxtime, y = all.out[,5], type = "l",
-      pch = 3, lwd = 4, col = "black", lty = 2)
-lines(x = maxtime, y = B, type = "l",
-      pch = 3, lwd = 4, col = "green")
+# lines(x = maxtime, y = all.out[,5]*100, type = "l",
+#       pch = 3, lwd = 4, col = "black", lty = 2)
+
 
 
 legend(x = "topright",
-       legend = c("Coral recruits", "Coral adults", "Macroalgae", "Parrotfish"),
+       legend = c("Coral recruits", "Coral adults", "Macroalgae"), #, "Parrotfish"),
        lty = 1,
-       col = c('#F6C64A', '#E95951', "#39656E", "black"),
+       col = c('#F6C64A', '#E95951', "#39656E"), #, "black"),
        lwd = 4)
+
+box(lwd=3)
+axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.5)
+axis(side = 1, at = seq(0, 250, 10), lwd = 2, yaxs = "i", cex.axis = 1.5)
+
 
 # PHASE PLOT
 plot(all.out[,4]*100, all.out[,3]*100, type = "l")
-points(all.out[1,4]*100, all.out[1,3]*100, col = "green")
-
-# #RESULTS
-# plot(x = times, y = all.out[,2], type = "l", main = "Seabed coverage",
-#      ylab = "Proportion of occupied seabed", xlab = "Time (years)", ylim=c(0,1),
-#      pch = 3, lwd = 4, col = '#F6C64A', cex.main = 1.5, cex.axis=1.3, cex.lab=1.3,
-#      panel.first = grid())
-# 
-# lines(x = times, y = all.out[,3], type = "l",
-#       pch = 3, lwd = 4, col = '#E95951')
-# lines(x = times, y = all.out[,4], type = "l",
-#       pch = 3, lwd = 4, col = '#39656E')
-# lines(x = times, y = all.out[,5], type = "l",
-#       pch = 3, lwd = 4, col = "black", lty = 2)
-# 
-# 
-# legend(x = "topright",
-#        legend = c("Coral recruits", "Coral adults", "Macroalgae", "Parrotfish"),
-#        lty = 1,
-#        col = c('#F6C64A', '#E95951', "#39656E", "black"),
-#        lwd = 4)
 
 
 ##################################################################################################################################
 # CORAL COVERAGE EQUILIBRIUM AND INSTABILITY ANALYSIS
 
-times <- seq(0,150,0.1)
+times <- seq(0,150,1) # to plot
+#times <- seq(0,500,1) # to get equilibrium
+f <- 0.2
 e <- 0.2
-num_scenarios <- 1000
-c_values <- c(0.10, 0.15, 0.166, 0.20, 0.25)
 
 R <- 0.2
 M <- 0.3
 G <- 1
-init_values <- list(c(R, 0.10, M, G ), 
-                    c(R, 0.15, M, G ), 
-                    c(R, 0.1777,M , G ), 
-                    c(R, 0.20, M, G ), 
-                    c(R, 0.9, M, G ))
+free <- 1-R-M
+init_values <- list(c(R, 0.015*free, M, G ), #A
+                    c(R, 0.15*free, M, G ), #B
+                    c(R, 0.30*free,M , G ),  #C
+                    c(R, 0.65*free, M, G ),  #D
+                    c(R, 1*free, M, G ))    #E
+
 
 corals.out <- list()
 for (i in 1:length(init_values)) {
   temp.out <- ode(init_values[[i]], times, derivative, parms=NULL)
   corals.out <- append(corals.out, list(temp.out))
-  print(tail(temp.out))
+  
+  # getting the stability value from conditions B to E (make sure to change times to converge)
+  print(tail(temp.out[,3])*100)
 }
-
-
+# getting the instability point as the max of A
+print(max(corals.out[[1]][,3]*100))
 
 #RESULTS
 coral_palette <- colorRampPalette(c("#FFD1DC", "#FFB6C1", "#FF98A8", "#FF7A8F", "#FF5C75", "#FF3E5C", "#FF2042", "#FF001E"))
-plot(x=times, y=corals.out[[1]][,3]*100, type="l", main="Coral coverage",
-     ylab="Coral coverage (%)", xlab="Time (yrs)", ylim=c(0, 100),
+plot(x=times, y=corals.out[[1]][,3]*100, type="l",
+     ylab="Coral coverage (%)", xlab="Time (yrs)", ylim=c(0, 100), xlim=c(0,150),
      pch=1, lwd=5, col=coral_palette(length(init_values)), cex.main=1.5, cex.axis=1.3, cex.lab=1.3,
      panel.first=grid(lty=1, col='lightgrey'), axes=0)
 
@@ -137,12 +129,13 @@ for (i in 2:length(init_values)) {
 }
 
 
-for (x in seq(0, 50, 1)) {symbols(x, 15.65, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", lty = NULL, lwd = 1)}
-for (x in seq(0, 50, 1)) {symbols(x, 86.57404, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
-for (x in seq(0, 50, 1)) {symbols(x, 0, circles = 0.5, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
+for (x in seq(0, 150, 3)) {symbols(x, 10.26236, circles = 1.5, inches = FALSE, add = TRUE, fg = "black", lty = NULL, lwd = 1)}
+for (x in seq(0, 150, 2)) {symbols(x, 36.98136, circles = 1, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
+for (x in seq(0, 150, 3)) {symbols(x, 0, circles = 1, inches = FALSE, add = TRUE, fg = "black", bg = "black", lty = NULL, lwd = 2)}
 box(lwd=3)
 axis(side = 2, at = seq(0, 100, 10), lwd = 2, xaxs = "i", las = 1, cex.axis = 1.3)
-axis(side = 1, at = seq(0, 50, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
+axis(side = 1, at = seq(0, 400, 10), lwd = 2, yaxs = "i", cex.axis = 1.3)
+
 
 ##################################################################################################################################
 # PHASE PLOT (CORAL vs MACROALGAE) e=0.2
@@ -158,46 +151,6 @@ for (i in 1:num_scenarios) {
   init[4] <- 1
   init_values <- append(init_values, list(init))
 }
-
-# #Not so random scenario
-# values <- seq(0,1,0.1)
-# init_values <- list()
-# for (c in 1:10){
-#   C <- values[c]
-#   
-#   for (m in 1:(10*(1-C))) {
-#     M <- values[m] 
-#     R <- runif(1, 0, 1-C-M)
-#     
-#     init <- c(R,C,M)
-#     
-#     init_values <- append(init_values, list(init))
-#   }
-# }
-# 
-# num_scenarios_per_value <- 20  # Number of scenarios per value of C or M
-# C_values <- seq(0.1, 0.9, 0.1)  # Values of C from 0.1 to 0.9 with spacing 0.1
-# M_values <- seq(0.1, 0.9, 0.1)  # Values of M from 0.1 to 0.9 with spacing 0.1
-# 
-# init_values <- list()
-# 
-# for (C in C_values) {
-#   for (M in M_values) {
-#     if (C+M >= 1){
-#       break
-#     }
-#     for (i in 1:num_scenarios_per_value) {
-#       # Calculate the remaining free space
-#       R_free_space <- 1 - C - M
-# 
-#       # Randomly assign the remaining free space to R
-#       R <- runif(1, 0, R_free_space)
-# 
-#       # Store the initial conditions
-#       init_values <- append(init_values, list(c(R, C, M)))
-#     }
-#   }
-# }
 
 
 
